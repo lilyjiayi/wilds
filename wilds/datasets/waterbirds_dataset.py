@@ -112,6 +112,14 @@ class WaterbirdsDataset(WILDSDataset):
            self._input_array[idx])
        x = Image.open(img_filename).convert('RGB')
        return x
+    
+    def __getitem__(self, idx):
+        # Any transformations are handled by the WILDSSubset
+        # since different subsets (e.g., train vs test) might have different transforms
+        x = self.get_input(idx)
+        y = self.y_array[idx]
+        metadata = self.metadata_array[idx]
+        return x, y, metadata, idx
 
     def eval(self, y_pred, y_true, metadata, prediction_fn=None):
         """
