@@ -30,7 +30,6 @@ def get_train_loader(loader, dataset, batch_size,
             return DataLoader(
                 dataset,
                 shuffle=True, # Shuffle training dataset
-                sampler=None,
                 collate_fn=dataset.collate,
                 batch_size=batch_size,
                 **loader_kwargs)
@@ -70,7 +69,6 @@ def get_train_loader(loader, dataset, batch_size,
 
         return DataLoader(dataset,
               shuffle=None,
-              sampler=None,
               collate_fn=dataset.collate,
               batch_sampler=batch_sampler,
               drop_last=False,
@@ -91,7 +89,6 @@ def get_eval_loader(loader, dataset, batch_size, grouper=None, **loader_kwargs):
         return DataLoader(
             dataset,
             shuffle=False, # Do not shuffle eval datasets
-            sampler=None,
             collate_fn=dataset.collate,
             batch_size=batch_size,
             **loader_kwargs)
