@@ -57,11 +57,12 @@ class CelebADataset(WILDSDataset):
             'download_url': 'https://worksheets.codalab.org/rest/bundles/0xfe55077f5cd541f985ebf9ec50473293/contents/blob/',
             'compressed_size': 1_308_557_312}}
 
-    def __init__(self, version=None, root_dir='data', download=False, split_scheme='official'):
+    def __init__(self, version=None, root_dir='data', download=False, split_scheme='official',
+                target='Male', group=['Black_Hair','Wavy_Hair']):
         self._version = version
         self._data_dir = self.initialize_data_dir(root_dir, download)
-        target_name = 'Blond_Hair'
-        confounder_names = ['Male']
+        target_name = target
+        confounder_names = group
 
         # Read in attributes
         attrs_df = pd.read_csv(
@@ -97,7 +98,7 @@ class CelebADataset(WILDSDataset):
         confounder_names = [s.lower() for s in confounder_names]
         self._metadata_fields = confounder_names + ['y']
         self._metadata_map = {
-            'y': ['not blond', '    blond'] # Padding for str formatting
+            'y': [f'not {target}', f'    {target}'] # Padding for str formatting
         }
 
         self._eval_grouper = CombinatorialGrouper(

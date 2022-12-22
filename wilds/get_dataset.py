@@ -23,6 +23,7 @@ def get_dataset(dataset: str, version: Optional[str] = None, unlabeled: bool = F
     if unlabeled and dataset not in wilds.unlabeled_datasets:
         raise ValueError(f'Unlabeled data is not available for {dataset}. Must be one of {wilds.unlabeled_datasets}.')
 
+    
     if dataset == 'amazon':
         if unlabeled:
             from wilds.datasets.unlabeled.amazon_unlabeled_dataset import AmazonUnlabeledDataset
@@ -42,6 +43,20 @@ def get_dataset(dataset: str, version: Optional[str] = None, unlabeled: bool = F
     elif dataset == 'celebA':
         from wilds.datasets.celebA_dataset import CelebADataset
         return CelebADataset(version=version, **dataset_kwargs)
+    
+    elif dataset == 'geo_yfcc':
+        from wilds.datasets.yfcc_dataset import YfccDataset
+        return YfccDataset(**dataset_kwargs)
+    
+    elif dataset == 'imagenet':
+        from wilds.datasets.imagenet_dataset import ImagenetDataset
+        return ImagenetDataset(type='imagenet', **dataset_kwargs)
+    elif dataset == 'yfcc_imagenet':
+        from wilds.datasets.imagenet_dataset import ImagenetDataset
+        return ImagenetDataset(type='yfcc_imagenet', **dataset_kwargs)
+    elif dataset == 'combined_imagenet':
+        from wilds.datasets.imagenet_dataset import ImagenetDataset
+        return ImagenetDataset(type='combined', **dataset_kwargs)
 
     elif dataset == 'civilcomments':
         if unlabeled:
@@ -56,7 +71,7 @@ def get_dataset(dataset: str, version: Optional[str] = None, unlabeled: bool = F
             from wilds.datasets.unlabeled.domainnet_unlabeled_dataset import DomainNetUnlabeledDataset
             return DomainNetUnlabeledDataset(version=version, **dataset_kwargs)
         else:
-            from wilds.datasets.domainnet_dataset import DomainNetDataset
+            from wilds.datasets.domainnet_naive_dataset import DomainNetDataset
             return DomainNetDataset(version=version, **dataset_kwargs)
 
     elif dataset == 'iwildcam':

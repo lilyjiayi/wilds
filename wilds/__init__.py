@@ -21,7 +21,11 @@ additional_datasets = [
     'yelp',
     'bdd100k',
     'sqf',
-    'encode'
+    'encode',
+    'geo_yfcc',
+    'imagenet',
+    'yfcc_imagenet',
+    'combined_imagenet'
 ]
 
 supported_datasets = benchmark_datasets + additional_datasets

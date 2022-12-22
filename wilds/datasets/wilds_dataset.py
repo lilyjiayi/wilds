@@ -20,7 +20,7 @@ class WILDSDataset:
     def __init__(self, root_dir, download, split_scheme):
         if len(self._metadata_array.shape) == 1:
             self._metadata_array = self._metadata_array.unsqueeze(1)
-        self._add_coarse_domain_metadata()
+        # self._add_coarse_domain_metadata()
         self.check_init()
 
     def __len__(self):
@@ -30,8 +30,10 @@ class WILDSDataset:
         # Any transformations are handled by the WILDSSubset
         # since different subsets (e.g., train vs test) might have different transforms
         x = self.get_input(idx)
-        y = self.y_array[idx]
-        metadata = self.metadata_array[idx]
+        # y = self.y_array[idx]
+        # metadata = self.metadata_array[idx]
+        y = self.y_array[idx].item()
+        metadata = self.metadata_array[idx].numpy()
         return x, y, metadata
 
     def get_input(self, idx):
@@ -74,8 +76,9 @@ class WILDSDataset:
 
         if frac < 1.0:
             # Randomly sample a fraction of the split
+            rng = np.random.default_rng(1230)
             num_to_retain = int(np.round(float(len(split_idx)) * frac))
-            split_idx = np.sort(np.random.permutation(split_idx)[:num_to_retain])
+            split_idx = np.sort(rng.permutation(split_idx)[:num_to_retain])
 
         return WILDSSubset(self, split_idx, transform)
 
@@ -512,7 +515,7 @@ class WILDSSubset(WILDSDataset):
 
     @property
     def y_array(self):
-        return self.dataset._y_array[self.indices]
+        return self.dataset.y_array[self.indices]
 
     @property
     def metadata_array(self):
