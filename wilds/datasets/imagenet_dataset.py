@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 import torch
 import pandas as pd
 from PIL import Image
+import numpy as np
 
 from wilds.common.utils import map_to_id_array
 from wilds.common.metrics.all_metrics import Accuracy
@@ -91,7 +92,8 @@ class ImagenetDataset(WILDSDataset):
             metadata_df.rename(columns = {'label' : 'y'}, inplace = True)
             self._input_image_paths = None
         elif type == 'combined':
-            self._input_image_paths = None
+            metadata_df.rename(columns = {'imagenet_classes' : 'y'}, inplace = True)
+            self._input_image_paths = metadata_df['filepath'].values
         
         self._y_array = torch.from_numpy(metadata_df['y'].values).type(torch.LongTensor)
     
@@ -101,11 +103,17 @@ class ImagenetDataset(WILDSDataset):
 
         # Populate metadata fields
         if type == "combined":
-            self._metadata_fields = ["dataset", "original_idx", "y"]
+            # self._metadata_fields = ["dataset", "original_idx", "y"]
+            # metadata_df = metadata_df[self._metadata_fields]
+            # possible_metadata_values = {
+            #     "dataset":["imagenet", "yfcc_imagenet"],
+            #     "original_idx" : range(len(metadata_df)),
+            #     "y": range(self._n_classes), 
+            # }
+            self._metadata_fields = ["dataset", "y"]
             metadata_df = metadata_df[self._metadata_fields]
             possible_metadata_values = {
                 "dataset":["imagenet", "yfcc_imagenet"],
-                "original_idx" : range(len(metadata_df)),
                 "y": range(self._n_classes), 
             }
             self._metadata_map, metadata = map_to_id_array(
@@ -131,7 +139,8 @@ class ImagenetDataset(WILDSDataset):
         if self._input_image_paths is None:
             return None
         else:
-            img_path = os.path.join(self.data_dir, self._input_image_paths[idx])
+            # img_path = os.path.join(self.data_dir, self._input_image_paths[idx])
+            img_path = self._input_image_paths[idx]
             img = Image.open(img_path).convert("RGB")
             return img
 
@@ -180,6 +189,12 @@ class ImagenetDataset(WILDSDataset):
         self._split_array = metadata_df.apply(
             lambda row: get_split(row), axis=1
         ).to_numpy()
+
+        # np.random.seed(1230)
+        # size = metadata_df.shape[0]
+        # val_idx = np.random.choice(range(size), round(0.2*size), replace=False)
+        # self._split_array = np.zeros(size)
+        # self._split_array[val_idx] = 1
 
     def initialize_eval_grouper(self):
         if self.split_scheme == "official":
