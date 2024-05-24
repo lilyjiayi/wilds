@@ -430,6 +430,9 @@ class DomainNetDataset(WILDSDataset):
         # target_domain: str = "real",
         use_sentry: bool = False,
         use_four: bool = False,
+        subsampled: bool = False, 
+        use_40_class: bool = False, 
+        use_binary: bool = False
     ):
         # Dataset information
         self._version: Optional[str] = version
@@ -446,13 +449,20 @@ class DomainNetDataset(WILDSDataset):
         #     # assert target_domain in SENTRY_DOMAINS
             print("Using the SENTRY version of DomainNet...")
             metadata_filename = "sentry_metadata.csv"
+            metadata_filepath = os.path.join(self.data_dir, metadata_filename)
             self._n_classes = 40
+        elif use_40_class:
+            metadata_filename = "40class_metadata.csv"
+            metadata_filepath = "/nlp/scr/jiayili/pytorch-cifar/40class_metadata.csv"
+            self._n_classes = 345
         else:
             metadata_filename = "metadata.csv"
+            metadata_filepath = os.path.join(self.data_dir, metadata_filename)
             self._n_classes = 345
 
         metadata_df: pd.DataFrame = pd.read_csv(
-            os.path.join(self.data_dir, metadata_filename),
+            #os.path.join(self.data_dir, metadata_filename),
+            metadata_filepath,
             dtype={
                 "image_path": str,
                 "domain": str,
